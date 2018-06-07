@@ -1,0 +1,42 @@
+﻿@model MvcSiteMapProvider.Web.Html.Models.SiteMapHelperModel
+@using System.Web.Mvc.Html
+@using MvcSiteMapProvider.Web.Html.Models
+@helper NavMenu(List<SiteMapNodeModel> nodeList, string ulClassName)
+    {
+        <ul class="@ulClassName" data-widget="@(ulClassName=="sidebar-menu"?"tree":"")">
+            @foreach (SiteMapNodeModel node in nodeList)
+            {
+                string url = string.IsNullOrEmpty(node.Url) ? "#" : node.Url;
+                var imageUrl = node.Attributes.Any(x => x.Key == "icon") ? node.Attributes["icon"].ToString() : "fa-caret-right";
+
+                if (!node.Children.Any())
+                {
+                    <li class="@(node.IsInCurrentPath ? "active" : "")">
+                        <a href="@url">
+                            <i class="menu-icon fa @imageUrl"></i>
+                            <span>
+                                @node.Title
+                            </span>
+                        </a>
+                        <b class="arrow"></b>
+                    </li>
+                }
+                else
+                {
+
+                    <li class="treeview  @(node.IsInCurrentPath ? "active" : "")">
+                        <a href="#">
+                            <i class="fa fa-files-o"></i>
+                            <span>@node.Title</span>
+                        </a>
+                        @NavMenu(node.Children.ToList(), "treeview-menu")
+                    </li>
+
+
+
+                }
+            }
+        </ul>
+}
+
+@NavMenu(Model.Nodes, "sidebar-menu")
